@@ -1,0 +1,17 @@
+application:
+  title: @project.name@
+  description: @project.description@
+  version: @project.version@
+
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}

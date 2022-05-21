@@ -1,0 +1,40 @@
+version: "3.7"
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    command: /wait-for-it.sh postgres:5432 -t 30 -- java $JVM_OPT -jar app.jar
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    environment:
+      SERVER_PORT: 8080
+      DATABASE_URL: jdbc:postgresql://postgres:5432/article_01
+      DATABASE_USERNAME: app_user
+      DATABASE_PASSWORD: 1234
+      JVM_OPT: -agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n
+    networks:
+      - sample-network
+
+  postgres:
+    image: postgres:14.2
+    environment:
+      - POSTGRES_USER=postgres #superuser
+      - POSTGRES_PASSWORD=postgres #superuser pass
+    volumes:
+      - type: bind
+        source: ./.docker/docker-entrypoint-initdb.d/init-user-db.sh
+        target: /docker-entrypoint-initdb.d/init-user-db.sh
+    ports:
+      - "5432:5432"
+    restart: always
+    networks:
+      - sample-network
+
+networks:
+  sample-network:
